@@ -1,14 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { SHAPES, ShapeIcon, type ShapeId } from "@/lib/shapes";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Sternbecher — Handgefertigte Tassen mit Stern" },
-      { name: "description", content: "Premium Tassen mit elegantem Stern-Design. Sechs Farben, ein Preis: 30 €. Versandfertig in 48 Stunden." },
-      { property: "og:title", content: "Sternbecher — Tassen mit Stern" },
-      { property: "og:description", content: "Premium Tassen mit elegantem Stern-Design. 30 €." },
+      { name: "description", content: "Premium Tassen mit zwölf Motiven zur Auswahl. Sechs Farben, ein Preis: 30 €." },
+      { property: "og:title", content: "Sternbecher — Deine Form, deine Tasse" },
+      { property: "og:description", content: "Premium Tassen mit zwölf Motiven. 30 €." },
       { property: "og:type", content: "website" },
     ],
     links: [{ rel: "canonical", href: "/" }],
@@ -17,15 +18,13 @@ export const Route = createFileRoute("/")({
 });
 
 const COLORS = [
-  { id: "white", label: "Weiß", hex: "#f5f2ee", star: "#1c1c1e" },
-  { id: "black", label: "Schwarz", hex: "#1c1c1e", star: "#f5f2ee" },
-  { id: "cream", label: "Creme", hex: "#e8dcc8", star: "#3a2a1a" },
-  { id: "navy", label: "Navy", hex: "#1a2744", star: "#e8c87a" },
-  { id: "sage", label: "Salbei", hex: "#8aab8a", star: "#f5f2ee" },
-  { id: "blush", label: "Blush", hex: "#d4a0a0", star: "#3a1a1a" },
+  { id: "white", label: "Weiß", hex: "#f5f2ee", motif: "#1c1c1e" },
+  { id: "black", label: "Schwarz", hex: "#1c1c1e", motif: "#f5f2ee" },
+  { id: "cream", label: "Creme", hex: "#e8dcc8", motif: "#3a2a1a" },
+  { id: "navy", label: "Navy", hex: "#1a2744", motif: "#e8c87a" },
+  { id: "sage", label: "Salbei", hex: "#8aab8a", motif: "#f5f2ee" },
+  { id: "blush", label: "Blush", hex: "#d4a0a0", motif: "#3a1a1a" },
 ];
-
-const PRICE = 30;
 
 function shade(hex: string, amt: number) {
   const h = hex.replace("#", "");
@@ -35,9 +34,8 @@ function shade(hex: string, amt: number) {
   return `#${[r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
 }
 
-function MugCanvas({ color, star, size = 520 }: { color: string; star: string; size?: number }) {
+function MugCanvas({ color, size = 520 }: { color: string; size?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const tRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -51,13 +49,11 @@ function MugCanvas({ color, star, size = 520 }: { color: string; star: string; s
 
     let raf = 0;
     const draw = (t: number) => {
-      tRef.current = t;
       const W = size, H = size;
       ctx.clearRect(0, 0, W, H);
       const cx = W / 2;
       const cy = H / 2 + Math.sin(t * 0.0009) * 10;
 
-      // Shadow
       const sh = ctx.createRadialGradient(cx, H * 0.86, 8, cx, H * 0.86, 130);
       sh.addColorStop(0, "rgba(0,0,0,0.32)");
       sh.addColorStop(1, "rgba(0,0,0,0)");
@@ -69,7 +65,6 @@ function MugCanvas({ color, star, size = 520 }: { color: string; star: string; s
       const mugW = W * 0.5, mugH = H * 0.6;
       const mx = cx - mugW / 2, my = cy - mugH * 0.5;
 
-      // Handle
       ctx.strokeStyle = shade(color, -25);
       ctx.lineWidth = 18;
       ctx.beginPath();
@@ -81,7 +76,6 @@ function MugCanvas({ color, star, size = 520 }: { color: string; star: string; s
       ctx.arc(mx + mugW + 6, cy, mugH * 0.28, -Math.PI * 0.55, Math.PI * 0.55);
       ctx.stroke();
 
-      // Body
       const grd = ctx.createLinearGradient(mx, 0, mx + mugW, 0);
       grd.addColorStop(0, shade(color, -40));
       grd.addColorStop(0.15, shade(color, -10));
@@ -97,7 +91,6 @@ function MugCanvas({ color, star, size = 520 }: { color: string; star: string; s
       ctx.closePath();
       ctx.fill();
 
-      // Rim top
       ctx.fillStyle = shade(color, -30);
       ctx.beginPath();
       ctx.ellipse(cx, my + 18, mugW / 2, 14, 0, 0, Math.PI * 2);
@@ -107,7 +100,6 @@ function MugCanvas({ color, star, size = 520 }: { color: string; star: string; s
       ctx.ellipse(cx, my + 18, mugW / 2 - 6, 10, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Highlight
       const hi = ctx.createLinearGradient(mx, 0, mx + mugW * 0.4, 0);
       hi.addColorStop(0, "rgba(255,255,255,0)");
       hi.addColorStop(0.6, "rgba(255,255,255,0.18)");
@@ -115,35 +107,40 @@ function MugCanvas({ color, star, size = 520 }: { color: string; star: string; s
       ctx.fillStyle = hi;
       ctx.fillRect(mx + 14, my + 28, mugW * 0.35, mugH - 50);
 
-      // Star
-      const starCx = cx - 6;
-      const starCy = cy + 10;
-      const r1 = mugW * 0.22;
-      const r2 = r1 * 0.42;
-      ctx.fillStyle = star;
-      ctx.beginPath();
-      for (let i = 0; i < 10; i++) {
-        const a = (Math.PI / 5) * i - Math.PI / 2;
-        const r = i % 2 === 0 ? r1 : r2;
-        const x = starCx + Math.cos(a) * r;
-        const y = starCy + Math.sin(a) * r;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.closePath();
-      ctx.fill();
-
       raf = requestAnimationFrame(draw);
     };
     raf = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(raf);
-  }, [color, star, size]);
+  }, [color, size]);
 
   return <canvas ref={canvasRef} style={{ width: size, height: size }} className="max-w-full h-auto" />;
 }
 
+function Mug({ color, motif, shape, size = 480 }: { color: string; motif: string; shape: ShapeId; size?: number }) {
+  return (
+    <div className="relative" style={{ width: size, height: size }}>
+      <MugCanvas color={color} size={size} />
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={shape}
+            initial={{ opacity: 0, scale: 0.6, rotate: -20 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            exit={{ opacity: 0, scale: 0.6, rotate: 20 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            style={{ width: size * 0.22, height: size * 0.22, marginTop: size * 0.03, marginLeft: -size * 0.025 }}
+          >
+            <ShapeIcon id={shape} color={motif} className="w-full h-full drop-shadow-sm" />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
 function Index() {
   const [colorIdx, setColorIdx] = useState(0);
+  const [shape, setShape] = useState<ShapeId>("star");
   const [cart, setCart] = useState(0);
   const [toast, setToast] = useState("");
   const color = COLORS[colorIdx];
@@ -156,27 +153,38 @@ function Index() {
 
   const addToCart = () => {
     setCart((c) => c + 1);
-    setToast(`${color.label} hinzugefügt`);
+    const label = SHAPES.find((s) => s.id === shape)?.label ?? "";
+    setToast(`${color.label} · ${label} hinzugefügt`);
     setTimeout(() => setToast(""), 2000);
   };
 
   return (
-    <div className="min-h-screen bg-[#fbfbfd] text-[#1d1d1f] antialiased">
-      {/* Nav */}
+    <div className="min-h-screen bg-[#fbfbfd] text-[#1d1d1f] antialiased overflow-x-hidden">
+      {/* Ambient gradient blobs */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute -top-32 -left-32 w-[40rem] h-[40rem] rounded-full opacity-30 float-slow"
+          style={{ background: "radial-gradient(circle, #ffb4d1, transparent 60%)" }} />
+        <div className="absolute top-1/3 -right-40 w-[36rem] h-[36rem] rounded-full opacity-25 float-slow"
+          style={{ background: "radial-gradient(circle, #b4d4ff, transparent 60%)", animationDelay: "-3s" }} />
+        <div className="absolute bottom-0 left-1/4 w-[32rem] h-[32rem] rounded-full opacity-20 float-slow"
+          style={{ background: "radial-gradient(circle, #fff1b4, transparent 60%)", animationDelay: "-6s" }} />
+      </div>
+
+      {/* Nav — liquid glass */}
       <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}
-        className="sticky top-0 z-50 backdrop-blur-xl bg-white/70 border-b border-black/5"
+        className="sticky top-3 z-50 mx-3 md:mx-auto md:max-w-5xl rounded-full glass"
       >
-        <div className="max-w-6xl mx-auto px-6 h-12 flex items-center justify-between text-sm">
-          <a href="#top" className="font-medium tracking-tight">★ Sternbecher</a>
-          <nav className="flex items-center gap-8 text-[13px] text-[#1d1d1f]/80">
+        <div className="px-5 h-12 flex items-center justify-between text-sm">
+          <a href="#top" className="font-semibold tracking-tight">★ Sternbecher</a>
+          <nav className="flex items-center gap-5 text-[13px] text-[#1d1d1f]/80">
             <a href="#produkt" className="hover:text-black transition">Produkt</a>
-            <a href="#farben" className="hover:text-black transition">Farben</a>
-            <a href="#details" className="hover:text-black transition">Details</a>
-            <Link to="/impressum" className="hover:text-black transition">Impressum</Link>
-            <span className="px-2 py-0.5 rounded-full bg-black text-white text-xs tabular-nums">{cart}</span>
+            <a href="#farben" className="hidden sm:inline hover:text-black transition">Farben</a>
+            <Link to="/impressum" className="hidden sm:inline hover:text-black transition">Impressum</Link>
+            <Link to="/auth" className="px-3 py-1 rounded-full bg-black text-white text-xs hover:bg-black/80 transition">Login</Link>
+            <span className="px-2 py-0.5 rounded-full bg-white/70 backdrop-blur text-[#1d1d1f] text-xs tabular-nums border border-black/10">{cart}</span>
           </nav>
         </div>
       </motion.header>
@@ -196,9 +204,9 @@ function Index() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35, duration: 0.9 }}
-            className="text-6xl md:text-8xl font-semibold tracking-tight leading-[0.95]"
+            className="text-6xl md:text-8xl font-semibold tracking-tight leading-[0.95] bg-gradient-to-br from-[#1d1d1f] via-[#1d1d1f] to-[#6e6e73] bg-clip-text text-transparent"
           >
-            Sternbecher.
+            Deine Form.
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 30 }}
@@ -206,7 +214,7 @@ function Index() {
             transition={{ delay: 0.5, duration: 0.9 }}
             className="mt-5 text-2xl md:text-3xl text-[#86868b] font-light"
           >
-            Ein Stern. Sechs Farben. Ein Preis.
+            Zwölf Motive. Sechs Farben. Ein Preis.
           </motion.p>
           <motion.div
             initial={{ opacity: 0 }}
@@ -226,11 +234,11 @@ function Index() {
           transition={{ delay: 0.6, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
           className="mt-4"
         >
-          <MugCanvas color={color.hex} star={color.star} size={420} />
+          <Mug color={color.hex} motif={color.motif} shape={shape} size={420} />
         </motion.div>
       </section>
 
-      {/* Produkt Showcase */}
+      {/* Produkt */}
       <section id="produkt" className="py-32 px-6">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
           <motion.div
@@ -248,7 +256,7 @@ function Index() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.5 }}
               >
-                <MugCanvas color={color.hex} star={color.star} size={480} />
+                <Mug color={color.hex} motif={color.motif} shape={shape} size={480} />
               </motion.div>
             </AnimatePresence>
           </motion.div>
@@ -259,30 +267,44 @@ function Index() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h2 className="text-5xl md:text-6xl font-semibold tracking-tight">Wähle deine Farbe.</h2>
-            <p className="mt-4 text-xl text-[#86868b] font-light">Sechs sorgfältig kuratierte Töne. Jeder mit handveredeltem Stern.</p>
+            <h2 className="text-5xl md:text-6xl font-semibold tracking-tight">Wähle dein Motiv.</h2>
+            <p className="mt-4 text-xl text-[#86868b] font-light">Zwölf handveredelte Formen — jedes Motiv ein Unikat.</p>
 
-            <div id="farben" className="mt-10 grid grid-cols-3 gap-3">
+            {/* Shape grid — glass cards */}
+            <div className="mt-8 grid grid-cols-4 gap-2">
+              {SHAPES.map((s) => (
+                <motion.button
+                  key={s.id}
+                  whileHover={{ y: -3, scale: 1.04 }}
+                  whileTap={{ scale: 0.94 }}
+                  onClick={() => setShape(s.id)}
+                  className={`group relative rounded-2xl p-3 transition-all ${
+                    shape === s.id ? "glass ring-2 ring-[#06c]" : "bg-white/40 backdrop-blur hover:bg-white/70 border border-black/5"
+                  }`}
+                  aria-label={s.label}
+                >
+                  <div className="aspect-square flex items-center justify-center">
+                    <ShapeIcon id={s.id} color="#1d1d1f" className="w-7 h-7" />
+                  </div>
+                  <p className="text-[10px] text-center mt-1 text-[#6e6e73]">{s.label}</p>
+                </motion.button>
+              ))}
+            </div>
+
+            <h3 id="farben" className="mt-10 text-sm uppercase tracking-[0.18em] text-[#86868b]">Farbe</h3>
+            <div className="mt-3 grid grid-cols-6 gap-2">
               {COLORS.map((c, i) => (
                 <motion.button
                   key={c.id}
-                  whileHover={{ y: -4 }}
+                  whileHover={{ y: -3 }}
                   whileTap={{ scale: 0.96 }}
                   onClick={() => setColorIdx(i)}
-                  className={`group relative rounded-2xl p-4 border-2 transition-all ${
-                    colorIdx === i ? "border-[#1d1d1f] bg-white shadow-lg" : "border-transparent bg-white/50 hover:bg-white"
+                  className={`rounded-full aspect-square border-2 transition-all ${
+                    colorIdx === i ? "border-[#1d1d1f] shadow-lg" : "border-transparent hover:border-black/20"
                   }`}
-                >
-                  <div
-                    className="w-full aspect-square rounded-full shadow-inner relative overflow-hidden"
-                    style={{ background: `radial-gradient(circle at 30% 30%, ${shade(c.hex, 30)}, ${c.hex} 60%, ${shade(c.hex, -30)})` }}
-                  >
-                    <svg viewBox="0 0 24 24" className="absolute inset-0 m-auto w-1/2 h-1/2" fill={c.star}>
-                      <polygon points="12,2 14.6,8.6 22,9.3 16.2,14 18,21 12,17.3 6,21 7.8,14 2,9.3 9.4,8.6" />
-                    </svg>
-                  </div>
-                  <p className="mt-2 text-xs font-medium">{c.label}</p>
-                </motion.button>
+                  style={{ background: `radial-gradient(circle at 30% 30%, ${shade(c.hex, 30)}, ${c.hex} 60%, ${shade(c.hex, -30)})` }}
+                  aria-label={c.label}
+                />
               ))}
             </div>
 
@@ -295,18 +317,22 @@ function Index() {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={addToCart}
-                className="ml-auto px-8 py-3.5 rounded-full bg-[#06c] text-white font-medium hover:bg-[#0077ed] transition shadow-lg shadow-[#06c]/20"
+                className="ml-auto px-8 py-3.5 rounded-full bg-[#06c] text-white font-medium hover:bg-[#0077ed] transition shadow-lg shadow-[#06c]/30 relative overflow-hidden"
               >
-                In den Warenkorb
+                <span className="relative z-10">In den Warenkorb</span>
               </motion.button>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Details */}
-      <section id="details" className="py-32 px-6 bg-black text-white">
-        <div className="max-w-5xl mx-auto">
+      {/* Details — dark glass */}
+      <section id="details" className="py-32 px-6 bg-gradient-to-b from-black via-[#0a0a0c] to-black text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-10 left-10 w-96 h-96 rounded-full bg-[#06c] blur-3xl float-slow" />
+          <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-[#d4a0a0] blur-3xl float-slow" style={{ animationDelay: "-4s" }} />
+        </div>
+        <div className="max-w-5xl mx-auto relative">
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -317,10 +343,10 @@ function Index() {
             Details, die zählen.
           </motion.h2>
 
-          <div className="mt-20 grid md:grid-cols-3 gap-8">
+          <div className="mt-20 grid md:grid-cols-3 gap-6">
             {[
               { t: "Steinzeug", d: "Bei 1240 °C gebrannt. Spülmaschinen- und mikrowellenfest." },
-              { t: "Handveredelt", d: "Jeder Stern wird in Hanau von Hand glasiert." },
+              { t: "Handveredelt", d: "Jedes Motiv wird in Hanau von Hand glasiert." },
               { t: "330 ml", d: "Die ideale Größe für deinen Morgenkaffee." },
             ].map((f, i) => (
               <motion.div
@@ -329,7 +355,7 @@ function Index() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, delay: i * 0.15 }}
-                className="p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur"
+                className="p-8 rounded-3xl glass-dark"
               >
                 <p className="text-2xl font-semibold">{f.t}</p>
                 <p className="mt-3 text-white/70 leading-relaxed">{f.d}</p>
@@ -348,7 +374,7 @@ function Index() {
           transition={{ duration: 0.9 }}
           className="text-5xl md:text-7xl font-semibold tracking-tight"
         >
-          Bereit für deinen Stern?
+          Bereit für dein Motiv?
         </motion.h2>
         <motion.a
           href="#produkt"
@@ -359,22 +385,22 @@ function Index() {
         </motion.a>
       </section>
 
-      {/* Footer */}
       <footer className="border-t border-black/10 py-10 px-6 text-center text-sm text-[#86868b]">
         <p>© 2026 Sternbecher · Paula Walldorf</p>
         <p className="mt-2">
           <Link to="/impressum" className="hover:text-black underline-offset-4 hover:underline">Impressum</Link>
+          {" · "}
+          <Link to="/auth" className="hover:text-black underline-offset-4 hover:underline">Login</Link>
         </p>
       </footer>
 
-      {/* Toast */}
       <AnimatePresence>
         {toast && (
           <motion.div
             initial={{ y: 80, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 80, opacity: 0 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-black text-white text-sm shadow-2xl z-50"
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full glass-dark text-white text-sm z-50"
           >
             {toast}
           </motion.div>
