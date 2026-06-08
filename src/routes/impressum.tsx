@@ -33,10 +33,9 @@ function Impressum() {
 
         <section className="mt-12 space-y-2 text-lg">
           <p className="font-medium">Paula Walldorf</p>
-          <p>Lindenauschule</p>
-          <p>Sportfeldstraße 25</p>
-          <p>63457 Hanau-Großauheim</p>
-          <p>Deutschland</p>
+          <p>Rue de Conflans 3</p>
+          <p>78700 Conflans-Sainte-Honorine</p>
+          <p>Frankreich</p>
         </section>
 
         <section className="mt-10 space-y-2 text-lg">
