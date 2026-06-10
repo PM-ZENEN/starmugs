@@ -192,6 +192,15 @@ function Index() {
     setTimeout(() => setToast(""), 2000);
   };
 
+  const printifyQ = useQuery({
+    queryKey: ["printify-products"],
+    queryFn: () => getPrintifyProducts(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const printifyProducts = printifyQ.data?.enabled ? printifyQ.data.products : [];
+  const hasPrintify = printifyProducts.length > 0;
+
+
   return (
     <div className="min-h-screen bg-[#fbfbfd] text-[#1d1d1f] antialiased overflow-x-hidden">
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
