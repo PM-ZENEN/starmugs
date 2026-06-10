@@ -23,12 +23,20 @@ export const Route = createFileRoute("/")({
 });
 
 const COLORS = [
-  { id: "white", label: "Weiß",     hex: "#f5f2ee", motif: "#1c1c1e" },
-  { id: "black", label: "Schwarz",  hex: "#1c1c1e", motif: "#f5f2ee" },
-  { id: "cream", label: "Creme",    hex: "#e8dcc8", motif: "#3a2a1a" },
-  { id: "navy",  label: "Navy",     hex: "#1a2744", motif: "#e8c87a" },
-  { id: "sage",  label: "Salbei",   hex: "#8aab8a", motif: "#f5f2ee" },
-  { id: "blush", label: "Blush",    hex: "#d4a0a0", motif: "#3a1a1a" },
+  { id: "white",   label: "Weiß",      hex: "#f5f2ee", motif: "#1c1c1e" },
+  { id: "black",   label: "Schwarz",   hex: "#1c1c1e", motif: "#f5f2ee" },
+  { id: "cream",   label: "Creme",     hex: "#e8dcc8", motif: "#3a2a1a" },
+  { id: "navy",    label: "Navy",      hex: "#1a2744", motif: "#e8c87a" },
+  { id: "sage",    label: "Salbei",    hex: "#8aab8a", motif: "#f5f2ee" },
+  { id: "blush",   label: "Blush",     hex: "#d4a0a0", motif: "#3a1a1a" },
+  { id: "sunset",  label: "Sunset",    hex: "#ff7a59", motif: "#fff4e6" },
+  { id: "ocean",   label: "Ocean",     hex: "#0a84ff", motif: "#e8f4ff" },
+  { id: "forest",  label: "Forest",    hex: "#2d5a3d", motif: "#e8f0d8" },
+  { id: "lavender",label: "Lavendel",  hex: "#b8a4e3", motif: "#2a1a44" },
+  { id: "graphite",label: "Graphit",   hex: "#3a3a3c", motif: "#ffd60a" },
+  { id: "rose",    label: "Rosé Gold", hex: "#e8b4a8", motif: "#5a2a2a" },
+  { id: "mint",    label: "Mint",      hex: "#a8e8d4", motif: "#1a4a3a" },
+  { id: "midnight",label: "Midnight",  hex: "#0a0a1f", motif: "#a8b4ff" },
 ];
 
 function shade(hex: string, amt: number) {
