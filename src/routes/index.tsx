@@ -250,117 +250,145 @@ function Index() {
         </motion.div>
       </section>
 
-      {/* Kategorien */}
-      <section id="shop" className="py-20 px-6">
-        <div className="max-w-6xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            className="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2">
-            {CATEGORIES.map((c) => (
-              <motion.button key={c.id} whileHover={{ y: -2 }} whileTap={{ scale: 0.96 }} onClick={() => setCat(c.id)}
-                className={`px-5 py-2.5 rounded-full font-medium whitespace-nowrap transition-all ${
-                  cat === c.id ? "bg-[#1d1d1f] text-white shadow-lg" : "glass text-[#1d1d1f]"
-                }`}>
-                <span className="mr-1.5">{c.emoji}</span>{c.label}
-              </motion.button>
-            ))}
-          </motion.div>
+      {hasPrintify ? (
+        /* Printify Collection — replaces local catalog when API token connected */
+        <section id="shop" className="py-20 px-6">
+          <div className="max-w-6xl mx-auto">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              className="flex items-center justify-between flex-wrap gap-4 mb-10">
+              <div>
+                <p className="text-sm uppercase tracking-[0.18em] text-[#86868b]">Live · Printify</p>
+                <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mt-1">Die Kollektion</h2>
+              </div>
+              <span className="text-xs px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-700 border border-emerald-500/20">
+                ● {printifyProducts.length} Produkte · Echtzeit
+              </span>
+            </motion.div>
 
-          {/* Produkt-Liste */}
-          <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <AnimatePresence mode="popLayout">
-              {productsInCat.map((p, i) => (
-                <motion.button key={p.id} layout
-                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ delay: i * 0.05 }}
-                  whileHover={{ y: -6, scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                  onClick={() => setProductId(p.id)}
-                  className={`text-left p-5 rounded-3xl transition-all ${
-                    productId === p.id ? "glass ring-2 ring-[#06c]" : "glass"
-                  }`}>
-                  <p className="font-semibold text-lg">{p.name}</p>
-                  <p className="text-sm text-[#86868b] mt-1">{p.tagline}</p>
-                  <p className="mt-3 text-[#06c] font-medium">{p.price.toFixed(2)} €</p>
-                </motion.button>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {printifyProducts.map((p) => (
+                <PrintifyCard key={p.id} product={p} />
               ))}
-            </AnimatePresence>
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* Konfigurator */}
-      <section className="py-20 px-6">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-          <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }} className="flex justify-center">
-            <AnimatePresence mode="wait">
-              <motion.div key={`${product.id}-${color.id}`}
-                initial={{ opacity: 0, scale: 0.9, rotateY: -20 }}
-                animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-                exit={{ opacity: 0, scale: 0.9, rotateY: 20 }}
-                transition={{ duration: 0.5 }}>
-                <ProductVisual product={product} color={color.hex} motif={color.motif} shape={shape} size={460}/>
+        </section>
+      ) : (
+        <>
+          {/* Kategorien */}
+          <section id="shop" className="py-20 px-6">
+            <div className="max-w-6xl mx-auto">
+              {printifyQ.isLoading && (
+                <p className="text-center text-sm text-[#86868b] mb-6">Lade Printify-Katalog …</p>
+              )}
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                className="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2">
+                {CATEGORIES.map((c) => (
+                  <motion.button key={c.id} whileHover={{ y: -2 }} whileTap={{ scale: 0.96 }} onClick={() => setCat(c.id)}
+                    className={`px-5 py-2.5 rounded-full font-medium whitespace-nowrap transition-all ${
+                      cat === c.id ? "bg-[#1d1d1f] text-white shadow-lg" : "glass text-[#1d1d1f]"
+                    }`}>
+                    <span className="mr-1.5">{c.emoji}</span>{c.label}
+                  </motion.button>
+                ))}
               </motion.div>
-            </AnimatePresence>
-          </motion.div>
 
-          <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}>
-            <p className="text-sm uppercase tracking-[0.18em] text-[#86868b]">{CATEGORIES.find((c) => c.id === cat)?.label}</p>
-            <h2 className="mt-1 text-5xl md:text-6xl font-semibold tracking-tight">{product.name}</h2>
-            <p className="mt-3 text-xl text-[#86868b] font-light">{product.tagline}</p>
-
-            <h3 className="mt-8 text-sm uppercase tracking-[0.18em] text-[#86868b]">Motiv</h3>
-            <div className="mt-3 grid grid-cols-6 gap-2">
-              {SHAPES.map((s) => (
-                <motion.button key={s.id} whileHover={{ y: -3, scale: 1.06 }} whileTap={{ scale: 0.94 }}
-                  onClick={() => setShape(s.id)}
-                  className={`group rounded-xl p-2.5 transition-all ${
-                    shape === s.id ? "glass ring-2 ring-[#06c]" : "bg-white/40 backdrop-blur hover:bg-white/70 border border-black/5"
-                  }`} aria-label={s.label}>
-                  <ShapeIcon id={s.id} color="#1d1d1f" className="w-6 h-6"/>
-                </motion.button>
-              ))}
+              <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <AnimatePresence mode="popLayout">
+                  {productsInCat.map((p, i) => (
+                    <motion.button key={p.id} layout
+                      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ delay: i * 0.05 }}
+                      whileHover={{ y: -6, scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                      onClick={() => setProductId(p.id)}
+                      className={`text-left p-5 rounded-3xl transition-all ${
+                        productId === p.id ? "glass ring-2 ring-[#06c]" : "glass"
+                      }`}>
+                      <p className="font-semibold text-lg">{p.name}</p>
+                      <p className="text-sm text-[#86868b] mt-1">{p.tagline}</p>
+                      <p className="mt-3 text-[#06c] font-medium">{p.price.toFixed(2)} €</p>
+                    </motion.button>
+                  ))}
+                </AnimatePresence>
+              </div>
             </div>
+          </section>
 
-            <h3 className="mt-6 text-sm uppercase tracking-[0.18em] text-[#86868b]">Farbe · {color.label}</h3>
-            <div className="mt-3 grid grid-cols-7 gap-2">
-              {COLORS.map((c, i) => (
-                <motion.button key={c.id} whileHover={{ y: -3, scale: 1.1 }} whileTap={{ scale: 0.94 }} onClick={() => setColorIdx(i)}
-                  className={`rounded-full aspect-square border-2 transition-all ${
-                    colorIdx === i ? "border-[#1d1d1f] shadow-xl scale-110" : "border-transparent hover:border-black/20"
-                  }`}
-                  style={{ background: `radial-gradient(circle at 30% 30%, ${shade(c.hex, 30)}, ${c.hex} 60%, ${shade(c.hex, -30)})` }}
-                  aria-label={c.label}/>
-              ))}
-            </div>
+          {/* Konfigurator */}
+          <section className="py-20 px-6">
+            <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+              <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }} className="flex justify-center">
+                <AnimatePresence mode="wait">
+                  <motion.div key={`${product.id}-${color.id}`}
+                    initial={{ opacity: 0, scale: 0.9, rotateY: -20 }}
+                    animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, rotateY: 20 }}
+                    transition={{ duration: 0.5 }}>
+                    <ProductVisual product={product} color={color.hex} motif={color.motif} shape={shape} size={460}/>
+                  </motion.div>
+                </AnimatePresence>
+              </motion.div>
 
-            {product.variants && (
-              <>
-                <h3 className="mt-6 text-sm uppercase tracking-[0.18em] text-[#86868b]">Größe</h3>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {product.variants.map((v) => (
-                    <motion.button key={v} whileTap={{ scale: 0.94 }} onClick={() => setSize(v)}
-                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                        size === v ? "bg-[#1d1d1f] text-white" : "bg-white/60 border border-black/10"
-                      }`}>{v}</motion.button>
+              <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}>
+                <p className="text-sm uppercase tracking-[0.18em] text-[#86868b]">{CATEGORIES.find((c) => c.id === cat)?.label}</p>
+                <h2 className="mt-1 text-5xl md:text-6xl font-semibold tracking-tight">{product.name}</h2>
+                <p className="mt-3 text-xl text-[#86868b] font-light">{product.tagline}</p>
+
+                <h3 className="mt-8 text-sm uppercase tracking-[0.18em] text-[#86868b]">Motiv</h3>
+                <div className="mt-3 grid grid-cols-6 gap-2">
+                  {SHAPES.map((s) => (
+                    <motion.button key={s.id} whileHover={{ y: -3, scale: 1.06 }} whileTap={{ scale: 0.94 }}
+                      onClick={() => setShape(s.id)}
+                      className={`group rounded-xl p-2.5 transition-all ${
+                        shape === s.id ? "glass ring-2 ring-[#06c]" : "bg-white/40 backdrop-blur hover:bg-white/70 border border-black/5"
+                      }`} aria-label={s.label}>
+                      <ShapeIcon id={s.id} color="#1d1d1f" className="w-6 h-6"/>
+                    </motion.button>
                   ))}
                 </div>
-              </>
-            )}
 
-            <div className="mt-10 flex items-center gap-4">
-              <div>
-                <p className="text-3xl font-semibold">{product.price.toFixed(2)} €</p>
-                <p className="text-sm text-[#86868b]">Inkl. MwSt · Kostenfreier Versand</p>
-              </div>
-              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={addToCart}
-                className="ml-auto px-8 py-3.5 rounded-full bg-[#06c] text-white font-medium hover:bg-[#0077ed] transition shadow-lg shadow-[#06c]/30">
-                In den Warenkorb
-              </motion.button>
+                <h3 className="mt-6 text-sm uppercase tracking-[0.18em] text-[#86868b]">Farbe · {color.label}</h3>
+                <div className="mt-3 grid grid-cols-7 gap-2">
+                  {COLORS.map((c, i) => (
+                    <motion.button key={c.id} whileHover={{ y: -3, scale: 1.1 }} whileTap={{ scale: 0.94 }} onClick={() => setColorIdx(i)}
+                      className={`rounded-full aspect-square border-2 transition-all ${
+                        colorIdx === i ? "border-[#1d1d1f] shadow-xl scale-110" : "border-transparent hover:border-black/20"
+                      }`}
+                      style={{ background: `radial-gradient(circle at 30% 30%, ${shade(c.hex, 30)}, ${c.hex} 60%, ${shade(c.hex, -30)})` }}
+                      aria-label={c.label}/>
+                  ))}
+                </div>
+
+                {product.variants && (
+                  <>
+                    <h3 className="mt-6 text-sm uppercase tracking-[0.18em] text-[#86868b]">Größe</h3>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {product.variants.map((v) => (
+                        <motion.button key={v} whileTap={{ scale: 0.94 }} onClick={() => setSize(v)}
+                          className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                            size === v ? "bg-[#1d1d1f] text-white" : "bg-white/60 border border-black/10"
+                          }`}>{v}</motion.button>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                <div className="mt-10 flex items-center gap-4">
+                  <div>
+                    <p className="text-3xl font-semibold">{product.price.toFixed(2)} €</p>
+                    <p className="text-sm text-[#86868b]">Inkl. MwSt · Kostenfreier Versand</p>
+                  </div>
+                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={addToCart}
+                    className="ml-auto px-8 py-3.5 rounded-full bg-[#06c] text-white font-medium hover:bg-[#0077ed] transition shadow-lg shadow-[#06c]/30">
+                    In den Warenkorb
+                  </motion.button>
+                </div>
+              </motion.div>
             </div>
-          </motion.div>
-        </div>
-      </section>
+          </section>
+        </>
+      )}
 
       {/* Details */}
       <section className="py-32 px-6 bg-gradient-to-b from-black via-[#0a0a0c] to-black text-white relative overflow-hidden">
