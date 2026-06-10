@@ -1,9 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import { SHAPES, ShapeIcon, type ShapeId } from "@/lib/shapes";
 import { PRODUCTS, CATEGORIES, type Category, type Product } from "@/lib/products";
 import { useCart } from "@/lib/cart";
+import { getPrintifyProducts } from "@/lib/printify.functions";
+import { PrintifyCard } from "@/components/PrintifyCard";
 
 export const Route = createFileRoute("/")({
   head: () => ({
