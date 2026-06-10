@@ -310,12 +310,12 @@ function Index() {
               ))}
             </div>
 
-            <h3 className="mt-6 text-sm uppercase tracking-[0.18em] text-[#86868b]">Farbe</h3>
-            <div className="mt-3 grid grid-cols-6 gap-2">
+            <h3 className="mt-6 text-sm uppercase tracking-[0.18em] text-[#86868b]">Farbe · {color.label}</h3>
+            <div className="mt-3 grid grid-cols-7 gap-2">
               {COLORS.map((c, i) => (
-                <motion.button key={c.id} whileHover={{ y: -3 }} whileTap={{ scale: 0.96 }} onClick={() => setColorIdx(i)}
+                <motion.button key={c.id} whileHover={{ y: -3, scale: 1.1 }} whileTap={{ scale: 0.94 }} onClick={() => setColorIdx(i)}
                   className={`rounded-full aspect-square border-2 transition-all ${
-                    colorIdx === i ? "border-[#1d1d1f] shadow-lg" : "border-transparent hover:border-black/20"
+                    colorIdx === i ? "border-[#1d1d1f] shadow-xl scale-110" : "border-transparent hover:border-black/20"
                   }`}
                   style={{ background: `radial-gradient(circle at 30% 30%, ${shade(c.hex, 30)}, ${c.hex} 60%, ${shade(c.hex, -30)})` }}
                   aria-label={c.label}/>
@@ -375,8 +375,26 @@ function Index() {
         </div>
       </section>
 
-      <footer className="border-t border-black/10 py-10 px-6 text-center text-sm text-[#86868b]">
-        <p>© 2026 Sternbecher · Paula Walldorf</p>
+      <footer className="border-t border-black/10 py-12 px-6 text-center text-sm text-[#86868b]">
+        <div className="flex justify-center gap-3 mb-6">
+          {[
+            { name: "TikTok", url: "https://tiktok.com/@pietromerico", bg: "#000",
+              svg: <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.1z"/></svg> },
+            { name: "Instagram", url: "https://instagram.com/pietromerico", bg: "linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)",
+              svg: <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg> },
+            { name: "YouTube", url: "https://youtube.com/@pietromerico", bg: "#ff0000",
+              svg: <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg> },
+          ].map((s) => (
+            <motion.a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer"
+              whileHover={{ y: -4, scale: 1.1, rotate: [0, -5, 5, 0] }} whileTap={{ scale: 0.9 }}
+              transition={{ rotate: { duration: 0.4 } }}
+              className="w-11 h-11 rounded-full flex items-center justify-center text-white shadow-lg"
+              style={{ background: s.bg }} aria-label={s.name}>
+              {s.svg}
+            </motion.a>
+          ))}
+        </div>
+        <p>© 2026 Sternbecher · Pietro Merico</p>
         <p className="mt-2">
           <Link to="/impressum" className="hover:text-black underline-offset-4 hover:underline">Impressum</Link>
           {" · "}<Link to="/auth" className="hover:text-black underline-offset-4 hover:underline">Login</Link>
