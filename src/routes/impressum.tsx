@@ -32,7 +32,7 @@ function Impressum() {
         <p className="mt-4 text-[#86868b]">Angaben gemäß § 5 TMG</p>
 
         <section className="mt-12 space-y-2 text-lg">
-          <p className="font-medium">Paula Walldorf</p>
+          <p className="font-medium">Pietro Merico</p>
           <p>Rue de Conflans 3</p>
           <p>78700 Conflans-Sainte-Honorine</p>
           <p>Frankreich</p>
@@ -40,12 +40,12 @@ function Impressum() {
 
         <section className="mt-10 space-y-2 text-lg">
           <p className="font-medium">Kontakt</p>
-          <p>E-Mail: paula.walldorf@sternbecher.de</p>
+          <p>E-Mail: pietro.merico@sternbecher.de</p>
         </section>
 
         <section className="mt-10 space-y-2 text-lg">
           <p className="font-medium">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</p>
-          <p>Paula Walldorf</p>
+          <p>Pietro Merico</p>
         </section>
 
         <section className="mt-10 text-sm text-[#86868b] leading-relaxed">
@@ -58,7 +58,7 @@ function Impressum() {
       </motion.main>
 
       <footer className="border-t border-black/10 py-8 text-center text-sm text-[#86868b]">
-        © 2026 Sternbecher · Paula Walldorf
+        © 2026 Sternbecher · Pietro Merico
       </footer>
     </div>
   );
